@@ -191,7 +191,6 @@ class _RegistrationState extends State<Registration> {
       User user = credential.user;
       print(user.email + "registered");
 
-      return "";
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
