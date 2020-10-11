@@ -1,43 +1,30 @@
-
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-
-
+import 'package:firebase_database/firebase_database.dart';
 
 class Registration extends StatefulWidget {
-
-
-
-
-_RegistrationState creatState()=>_RegistrationState();
+  _RegistrationState creatState() => _RegistrationState();
 
   @override
   State<StatefulWidget> createState() {
-   return _RegistrationState();
+    return _RegistrationState();
   }
-
-
-  }
-
-
+}
 
 class _RegistrationState extends State<Registration> {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseDatabase fb = FirebaseDatabase.instance;
 
-  FirebaseAuth _auth=FirebaseAuth.instance;
-
-
-
+  String _name;
+  String _username;
+  String _password;
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  String n,e,p;
-
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +35,9 @@ class _RegistrationState extends State<Registration> {
           height: double.infinity,
           decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("images/background.jpg"),
-                fit: BoxFit.cover,
-              )),
+            image: AssetImage("images/background.jpg"),
+            fit: BoxFit.cover,
+          )),
           child: Center(
             child: ListView(
               shrinkWrap: true,
@@ -82,14 +69,8 @@ class _RegistrationState extends State<Registration> {
                 Padding(
                   padding: EdgeInsets.all(30),
                   child: Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width * .80,
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height * .50,
+                    width: MediaQuery.of(context).size.width * .80,
+                    height: MediaQuery.of(context).size.height * .50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.white,
@@ -123,9 +104,9 @@ class _RegistrationState extends State<Registration> {
                             padding: EdgeInsets.only(
                                 left: 15, right: 15, bottom: 0, top: 15),
                             child: TextField(
-
+                              controller: nameController,
                               decoration:
-                              InputDecoration(hintText: 'Enter Name'),
+                                  InputDecoration(hintText: 'Enter Name'),
                             ),
                           ),
                           Padding(
@@ -134,7 +115,7 @@ class _RegistrationState extends State<Registration> {
                             child: TextField(
                               controller: emailController,
                               decoration:
-                              InputDecoration(hintText: 'Enter Gmail'),
+                                  InputDecoration(hintText: 'Enter Gmail'),
                             ),
                           ),
                           Padding(
@@ -143,7 +124,7 @@ class _RegistrationState extends State<Registration> {
                             child: TextField(
                               controller: passwordController,
                               decoration:
-                              InputDecoration(hintText: 'Enter Password'),
+                                  InputDecoration(hintText: 'Enter Password'),
                             ),
                           ),
                           Padding(
@@ -153,10 +134,7 @@ class _RegistrationState extends State<Registration> {
                                 "Did you forget Passowrd? Reset Here!",
                                 style: TextStyle(color: Colors.blueAccent),
                               ),
-                              onTap: () {
-                                signUp();
-
-                              },
+                              onTap: () {},
                             ),
                           ),
                           Padding(
@@ -178,9 +156,11 @@ class _RegistrationState extends State<Registration> {
                                 ),
                                 color: Colors.blueAccent,
                                 onPressed: () {
-
-                                  signUp();
-
+                                  _name = nameController.text.toString();
+                                  _password =
+                                      passwordController.text.toString();
+                                  _username = emailController.text.toString();
+                                  signUp(_name, _password, _username);
                                 },
                               ),
                             ),
@@ -197,16 +177,23 @@ class _RegistrationState extends State<Registration> {
       ),
     );
   }
-  Future<void> signUp( ) async{
 
-    try{
-      await _auth.createUserWithEmailAndPassword(email:emailController.text.toString(),password:passwordController.text.toString());
+  Future<void> signUp(String _name, String _password, String _email) async {
+    try {
+      fb
+          .reference()
+          .child(_name)
+          .set({'email': '$_email', 'password': '$_password'});
 
+      UserCredential credential = await _auth.createUserWithEmailAndPassword(
+          email: emailController.text.toString(),
+          password: passwordController.text.toString());
+      User user = credential.user;
+      print(user.email + "registered");
 
+      return "";
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
     }
-   on FirebaseAuthException catch(e){
-     print(e);
-   }
   }
-
 }
