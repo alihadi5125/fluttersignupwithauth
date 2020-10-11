@@ -1,26 +1,42 @@
 
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
+
+
 class Registration extends StatefulWidget {
 
 
+
+
+_RegistrationState creatState()=>_RegistrationState();
+
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-   return RegistrationState();
+   return _RegistrationState();
   }
-}
-class RegistrationState extends State<Registration> {
 
 
-  final username = TextEditingController();
-  final password = TextEditingController();
-  bool _success;
-  String _userEmail;
+  }
+
+
+
+class _RegistrationState extends State<Registration> {
+
+  FirebaseAuth _auth=FirebaseAuth.instance;
+
+
+
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  String n,e,p;
 
 
   @override
@@ -116,7 +132,7 @@ class RegistrationState extends State<Registration> {
                             padding: EdgeInsets.only(
                                 left: 15, right: 15, bottom: 0, top: 15),
                             child: TextField(
-                              controller: username,
+                              controller: emailController,
                               decoration:
                               InputDecoration(hintText: 'Enter Gmail'),
                             ),
@@ -125,7 +141,7 @@ class RegistrationState extends State<Registration> {
                             padding: EdgeInsets.only(
                                 left: 15, right: 15, bottom: 0, top: 4),
                             child: TextField(
-                              controller: password,
+                              controller: passwordController,
                               decoration:
                               InputDecoration(hintText: 'Enter Password'),
                             ),
@@ -138,6 +154,7 @@ class RegistrationState extends State<Registration> {
                                 style: TextStyle(color: Colors.blueAccent),
                               ),
                               onTap: () {
+                                signUp();
 
                               },
                             ),
@@ -162,6 +179,7 @@ class RegistrationState extends State<Registration> {
                                 color: Colors.blueAccent,
                                 onPressed: () {
 
+                                  signUp();
 
                                 },
                               ),
@@ -178,6 +196,17 @@ class RegistrationState extends State<Registration> {
         ),
       ),
     );
+  }
+  Future<void> signUp( ) async{
+
+    try{
+      await _auth.createUserWithEmailAndPassword(email:emailController.text.toString(),password:passwordController.text.toString());
+
+
+    }
+   on FirebaseAuthException catch(e){
+     print(e);
+   }
   }
 
 }
