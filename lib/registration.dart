@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fluttersignupwithauth/homscreen.dart';
 
 class Registration extends StatefulWidget {
   _RegistrationState creatState() => _RegistrationState();
@@ -16,7 +17,7 @@ class Registration extends StatefulWidget {
 
 class _RegistrationState extends State<Registration> {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseDatabase fb = FirebaseDatabase.instance;
+  final fb = FirebaseDatabase().reference().child("user");
 
   String _name;
   String _username;
@@ -179,20 +180,19 @@ class _RegistrationState extends State<Registration> {
   }
 
   Future<void> signUp(String _name, String _password, String _email) async {
-    try {
-      fb
-          .reference()
-          .child(_name)
-          .set({'email': '$_email', 'password': '$_password'});
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
 
-      UserCredential credential = await _auth.createUserWithEmailAndPassword(
-          email: emailController.text.toString(),
-          password: passwordController.text.toString());
-      User user = credential.user;
-      print(user.email + "registered");
+    UserCredential credential = await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.toString(),
+        password: passwordController.text.toString());
+    User user = credential.user;
+    print(user.email + "registered");
 
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
+    if (!_name.isEmpty && !_password.isEmpty && !_email.isEmpty) {
+      final fb = FirebaseDatabase().reference().child("user");
+      fb.child(_name).set(
+          {'name': '$_name', 'email': '$_email', 'password': '$_password'});
     }
   }
 }
