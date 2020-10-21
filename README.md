@@ -1,6 +1,9 @@
 # fluttersignupwithauth
 
 A new Flutter application.
+Flutter FireBase (Sending Data to Realtime Database Firebase)
+Flutter Authentication (Signup With Email and Password)
+Flutter Authentication (Sign in with Email and Password)
 
 ## Getting Started
 
